@@ -37,7 +37,7 @@ jobs:
       - name: Prepare folder structure
         run: |
           mkdir oauth-oidc
-          shopt -s dotglob
+          shopt -s dotglob extglob
           mv !(oauth-oidc) oauth-oidc/
 
       - name: Create zip package
