@@ -13,7 +13,6 @@
   "prefer-stable": true,
   "require": {
     "socialiteproviders/manager": "^4.0",
-    "socialiteproviders/genericoauth2": "^4.1",
     "psr/log": "^1"
   },
   "autoload": {
