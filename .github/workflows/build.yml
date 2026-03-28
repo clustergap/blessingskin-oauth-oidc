@@ -1,0 +1,51 @@
+name: Build Plugin Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (optional, e.g., v2.0.0)'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Get version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare folder structure
+        run: |
+          mkdir oauth-oidc
+          shopt -s dotglob
+          mv !(oauth-oidc) oauth-oidc/
+
+      - name: Create zip package
+        run: |
+          zip -r "OAuth-OIDC_${{ steps.version.outputs.version }}.zip" oauth-oidc
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OAuth-OIDC-${{ steps.version.outputs.version }}
+          path: OAuth-OIDC_${{ steps.version.outputs.version }}.zip
+          retention-days: 7
