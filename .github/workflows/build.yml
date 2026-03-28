@@ -1,12 +1,11 @@
 name: Build Plugin Package
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version tag (optional, e.g., v2.0.0)'
-        required: false
-        default: ''
+  push:
+    branches:
+      - test
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -29,6 +28,8 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
             echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          elif [ -n "${{ github.ref_name }}" ]; then
+            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           else
             echo "version=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
           fi
